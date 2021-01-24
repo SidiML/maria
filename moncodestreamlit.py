@@ -61,33 +61,26 @@ if id_client in list(df.index):
 	st.sidebar.markdown(f'**Niveau d\'Etude:**<div style="color: green; font-size: medium">{df1["NAME_EDUCATION_TYPE"].loc[a]}</div>',unsafe_allow_html=True)
 	st.sidebar.markdown(f'**Age:**<div style="color: green; font-size: medium">{df1["AGE"].loc[a]}</div>',unsafe_allow_html=True)
 
-
 	b=np.round(df['proba'].loc[a],3)
-
 	col1, col2= st.beta_columns(2)
-
 	with col1:
 		st.markdown("**IDENTIFIANT**")
 		st.write("L'identifiant du client est:",a, use_column_width=True)
 	with col2:
 		st.markdown("**PROBABILITE**")
 		st.write("Probabilité de ne pas rembourser est:",b,use_column_width=True)
-
-
-	links3="https://github.com/SidiML/maria/blob/master/my_shap_model.joblib?raw=true"
-	mfile3 = BytesIO(requests.get(links3).content)
+    ######################################
 	@st.cache()
 	def get_data():
-
-		return joblib.load(mfile3)
+		return joblib.load("my_shap_model.joblib")
+	
 	lgbm_explainer=get_data()
 	shap_values =lgbm_explainer.shap_values(df.drop(['predict','proba'],1).loc[[a]])
-
 	vals= np.abs(shap_values).mean(0)
 	feature_importance = pd.DataFrame(list(zip(df.drop(['predict','proba'],1).loc[[a]], vals)), columns=['col_name','feature_importance'])
 	feature_importance.sort_values(by=['feature_importance'], ascending=False,inplace=True)
 
-
+######################################################################
 	st.sidebar.title("Features Importantes")
 	if st.sidebar.checkbox("Voir les features"):
 		st.sidebar.subheader('Les variables importantes')
