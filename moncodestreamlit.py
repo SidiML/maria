@@ -44,7 +44,7 @@ def st_shap(plot, height=200,width=870):
 
 
 #@st.cache()
-df1 = X_test_final.copy()
+df1 =pd.read_pickle("data_dash",compression='gzip')
 #df1.set_index('SK_ID_CURR',inplace=True)
 df1['AGE']=round(np.abs(df1['DAYS_BIRTH']/365)).astype(int)
 
