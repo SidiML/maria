@@ -5,64 +5,40 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
+import streamlit.components.v1 as components
 import shap
 shap.initjs()
-import lightgbm as lgb
-from sklearn.model_selection import train_test_split
 import plotly.graph_objects as go
 from plotly import tools
 import plotly.offline as py
-import streamlit.components.v1 as components
-from io import BytesIO
-import requests
 import os,joblib,warnings
 warnings.filterwarnings('ignore')
 import seaborn as sns
 color=sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
-import lightgbm as lgb
-
+###########################################
 st.set_page_config(layout="wide")
 st.title("Tableaux de bord pour prédire un défaut de remboursement de crédit")
 st.subheader("Ce tableau de bord permet de prédire si un client est capable ou non capable de rembourser un crédit")
-
-
-X_test_final=pd.read_csv("https://github.com/SidiML/maria/blob/master/X_test_final.csv?raw=true")
+#########################################
+X_test_final=pd.read_csv(X_test_final.csv")
 X_test_final.set_index("SK_ID_CURR", inplace = True)
-y_test = pd.read_pickle("https://github.com/SidiML/maria/blob/master/y_test?raw=true")
-
+y_test = pd.read_pickle("y_test")
 #####################################
-links="https://github.com/SidiML/maria/blob/master/my_model.joblib?raw=true"
-mfile = BytesIO(requests.get(links).content)
 @st.cache()
 def get_data1():
-	return joblib.load(mfile)
-
+	return joblib.load(my_model.joblib)
 clf1=get_data1()
 ############################################
-
-links2="https://github.com/SidiML/maria/blob/master/my_feature.joblib?raw=true"
-mfile2 = BytesIO(requests.get(links2).content)
-
 @st.cache()
 def get_data():
-	return joblib.load(mfile2)
-
+	return joblib.load(my_feature.joblib)
 selected_features=get_data()
 ##################################################
 predict_test=clf1.predict(X_test_final[selected_features])
-#print(classification_report(y_test,predict_test))
 predict_prob_test=clf1.predict_proba(X_test_final[selected_features])
-#pd.DataFrame(confusion_matrix(y_test,predict_test,normalize='true'))
 df=X_test_final[selected_features].copy()
 df['predict']=predict_test
 df['proba']=predict_prob_test[:,1]
-#plot_confusion_matrix(y_test, predict_test)
-
-
-#lgb.plot_importance(clf1, ax=None, height=0.2, xlim=None, ylim=None, title='Feature importance', xlabel='Feature importance',
-#					ylabel='Features', importance_type='split', max_num_features=25, ignore_zero=True, figsize=(22, 20), dpi=None, grid=True, precision=3)
-#plt.show()
-
 #################
 if st.checkbox('Montrez la table'):
 	st.subheader('Voici les données')
@@ -74,17 +50,11 @@ def st_shap(plot, height=200,width=870):
 
 
 #@st.cache()
-def get_data():
-    links="https://github.com/SidiML/maria/blob/master/data_train1?raw=true"
-    return pd.read_pickle(links, compression='gzip')
-
-df1 = get_data()
-
-df1.set_index('SK_ID_CURR',inplace=True)
+df1 = X_test_final.copy()
+#df1.set_index('SK_ID_CURR',inplace=True)
 df1['AGE']=round(np.abs(df1['DAYS_BIRTH']/365)).astype(int)
 
 st.sidebar.title('PROFIL CLIENT')
-#id_client = st.sidebar.number_input("Entrez l'ID du client.")
 id_client=st.sidebar.selectbox("Selectionnez l'identifiant du client", options=(df.index))
 if id_client in list(df.index):
 	a=(int(id_client))
@@ -128,19 +98,12 @@ if id_client in list(df.index):
 	if st.sidebar.checkbox("Voir les features"):
 		st.sidebar.subheader('Les variables importantes')
 		st.sidebar.dataframe(feature_importance)
-
 	st.sidebar.subheader('Graphe de Décision')
 	fig2, ax = plt.subplots(nrows=1, ncols=1)
 	shap.summary_plot(shap_values, df.drop(['predict','proba'],1).loc[[a]], plot_type="bar")
 	st.sidebar.pyplot(fig2,use_column_width=True)
-
-
-
 	# plot the SHAP values for the 10th observation
 	st_shap(shap.force_plot(lgbm_explainer.expected_value, shap_values, df.drop(['predict','proba'],1).loc[[a]]))
-
-
-
 	col1, col2= st.beta_columns(2)
 	with col1:
 		st.subheader("Comparaison du Client avec la moyenne des Clients")
