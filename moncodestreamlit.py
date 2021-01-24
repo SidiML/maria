@@ -21,7 +21,7 @@ import seaborn as sns
 color=sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 import lightgbm as lgb
 
-st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 st.title("Tableaux de bord pour prédire un défaut de remboursement de crédit")
 st.subheader("Ce tableau de bord permet de prédire si un client est capable ou non capable de rembourser un crédit")
 
