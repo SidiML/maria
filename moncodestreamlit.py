@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
 import shap
 shap.initjs()
-import plotly.graph_objects as go
 from plotly import tools
 import plotly.offline as py
 import os,joblib,warnings
@@ -20,7 +19,7 @@ st.set_page_config(layout="wide")
 st.title("Tableaux de bord pour prédire un défaut de remboursement de crédit")
 st.subheader("Ce tableau de bord permet de prédire si un client est capable ou non capable de rembourser un crédit")
 #########################################
-X_test_final=pd.read_csv(X_test_final.csv")
+X_test_final=pd.read_csv("X_test_final.csv")
 X_test_final.set_index("SK_ID_CURR", inplace = True)
 y_test = pd.read_pickle("y_test")
 #####################################
