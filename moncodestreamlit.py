@@ -21,7 +21,7 @@ import seaborn as sns
 color=sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 import lightgbm as lgb
 
-#st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 st.title("Tableaux de bord pour prédire un défaut de remboursement de crédit")
 st.subheader("Ce tableau de bord permet de prédire si un client est capable ou non capable de rembourser un crédit")
 
@@ -96,8 +96,8 @@ if id_client in list(df.index):
 	st.sidebar.markdown(f'**Situation Familiale:**<div style="color: green; font-size: medium">{df1["NAME_FAMILY_STATUS"].loc[a]}</div>',unsafe_allow_html=True)
 	st.sidebar.markdown(f'**Niveau d\'Etude:**<div style="color: green; font-size: medium">{df1["NAME_EDUCATION_TYPE"].loc[a]}</div>',unsafe_allow_html=True)
 	st.sidebar.markdown(f'**Age:**<div style="color: green; font-size: medium">{df1["AGE"].loc[a]}</div>',unsafe_allow_html=True)
-	
-	
+
+
 	b=np.round(df['proba'].loc[a],3)
 
 	col1, col2= st.beta_columns(2)
@@ -114,7 +114,7 @@ if id_client in list(df.index):
 	mfile3 = BytesIO(requests.get(links3).content)
 	@st.cache()
 	def get_data():
-		
+
 		return joblib.load(mfile3)
 	lgbm_explainer=get_data()
 	shap_values =lgbm_explainer.shap_values(df.drop(['predict','proba'],1).loc[[a]])
@@ -122,7 +122,7 @@ if id_client in list(df.index):
 	vals= np.abs(shap_values).mean(0)
 	feature_importance = pd.DataFrame(list(zip(df.drop(['predict','proba'],1).loc[[a]], vals)), columns=['col_name','feature_importance'])
 	feature_importance.sort_values(by=['feature_importance'], ascending=False,inplace=True)
-	
+
 
 	st.sidebar.title("Features Importantes")
 	if st.sidebar.checkbox("Voir les features"):
@@ -136,7 +136,7 @@ if id_client in list(df.index):
 
 
 
-	# plot the SHAP values for the 10th observation 
+	# plot the SHAP values for the 10th observation
 	st_shap(shap.force_plot(lgbm_explainer.expected_value, shap_values, df.drop(['predict','proba'],1).loc[[a]]))
 
 
@@ -158,7 +158,7 @@ if id_client in list(df.index):
 		colors[0] = 'crimson'
 		#fig = go.Figure(data=[go.Bar(x=x1, y=y1,text=y1,textposition='auto',marker_color=colors)])
 		data = [go.Bar(x=x1, y=y1,text=y1,textposition='auto',marker_color=colors)]
-				
+
 		layout = go.Layout(
 			title = "Comparaison de la variable {}".format(colonnes),
 			xaxis=dict(
@@ -168,11 +168,11 @@ if id_client in list(df.index):
 				title=colonnes,
 				)
 		)
-		fig1 = go.Figure(data = data, layout=layout) 
+		fig1 = go.Figure(data = data, layout=layout)
 		fig1.layout.template = "simple_white"
 		#py.iplot(fig1)
 		st.plotly_chart(fig1,use_container_width=True)
-		
+
 	with col2:
 		st.subheader("Comparaison du client avec les clients ayant les mêmes profils.")
 		cols1=["CODE_GENDER","OCCUPATION_TYPE","NAME_INCOME_TYPE","NAME_FAMILY_STATUS","NAME_EDUCATION_TYPE","NAME_TYPE_SUITE","NAME_HOUSING_TYPE"]
@@ -203,7 +203,7 @@ if id_client in list(df.index):
 				title=colonnes1,
 				)
 		)
-		fig2 = go.Figure(data = data1, layout=layout) 
+		fig2 = go.Figure(data = data1, layout=layout)
 		fig2.layout.template = "plotly"
 		#py.iplot(fig1)
 		st.plotly_chart(fig2,use_container_width=True)
