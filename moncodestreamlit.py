@@ -23,14 +23,18 @@ X_test_final=pd.read_csv("X_test_final.csv")
 X_test_final.set_index("SK_ID_CURR", inplace = True)
 y_test = pd.read_pickle("y_test")
 #####################################
+
 @st.cache()
 def get_data1():
-	return joblib.load(my_model.joblib)
+	links=my_model.joblib
+	return joblib.load(links)
 clf1=get_data1()
 ############################################
+
 @st.cache()
 def get_data():
-	return joblib.load(my_feature.joblib)
+	links1=my_feature.joblib
+	return joblib.load(links1)
 selected_features=get_data()
 ##################################################
 predict_test=clf1.predict(X_test_final[selected_features])
