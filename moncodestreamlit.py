@@ -70,7 +70,7 @@ if id_client in list(df.index):
 		st.markdown("**PROBABILITE**")
 		st.write("Probabilité de ne pas rembourser est:",b,use_column_width=True)
     ######################################
-	lgbm_explainer=joblib.load("my_shap_model.joblib")
+	lgbm_explainer=joblib.load("shap_model.pkl")
 	shap_values =lgbm_explainer.shap_values(df.drop(['predict','proba'],1).loc[[a]])
 	vals= np.abs(shap_values).mean(0)
 	feature_importance = pd.DataFrame(list(zip(df.drop(['predict','proba'],1).loc[[a]], vals)), columns=['col_name','feature_importance'])
