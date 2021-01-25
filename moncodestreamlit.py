@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
 import shap
+import lightgbm as lgb
 shap.initjs()
 from plotly import tools
 import plotly.offline as py
